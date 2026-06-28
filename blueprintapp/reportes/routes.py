@@ -3,8 +3,11 @@ from io import BytesIO
 
 from flask import Blueprint, Response, render_template, request
 from flask_login import login_required
+from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
+from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+from reportlab.lib.units import inch
+from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 from sqlalchemy import func
 
 from blueprintapp.app import db
@@ -129,29 +132,139 @@ def export_excel():
 def export_pdf():
     datos = _datos_reportes()
     buffer = BytesIO()
-    pdf = canvas.Canvas(buffer, pagesize=letter)
-    width, height = letter
-    y = height - 45
-    pdf.setFont("Helvetica-Bold", 14)
-    pdf.drawString(40, y, "Reporte NexVolt")
-    y -= 25
-    pdf.setFont("Helvetica", 9)
-    pdf.drawString(40, y, f"Adelantos: Bs {datos['adelantos']:.2f}    Saldos pendientes: Bs {datos['saldos']:.2f}")
-    y -= 25
-    pdf.setFont("Helvetica-Bold", 10)
-    pdf.drawString(40, y, "Ventas por fecha")
-    y -= 18
-    pdf.setFont("Helvetica", 8)
-    for venta in datos["ventas"][:32]:
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=letter,
+        rightMargin=0.45 * inch,
+        leftMargin=0.45 * inch,
+        topMargin=0.45 * inch,
+        bottomMargin=0.45 * inch,
+        title="Reporte NexVolt",
+    )
+    styles = getSampleStyleSheet()
+    styles.add(ParagraphStyle(name="BrandTitle", fontName="Helvetica-Bold", fontSize=18, textColor=colors.white))
+    styles.add(ParagraphStyle(name="BrandSub", fontSize=8.5, textColor=colors.HexColor("#dbeafe")))
+    styles.add(ParagraphStyle(name="SectionTitle", fontName="Helvetica-Bold", fontSize=11, textColor=colors.HexColor("#0b2545"), spaceBefore=10, spaceAfter=6))
+    styles.add(ParagraphStyle(name="CellSmall", fontSize=7.2, leading=9))
+
+    def p(value):
+        return Paragraph(str(value or "---"), styles["CellSmall"])
+
+    def money(value):
+        return f"Bs {float(value or 0):,.2f}"
+
+    def table(data, widths):
+        tbl = Table(data, colWidths=widths, repeatRows=1, hAlign="LEFT")
+        tbl.setStyle(
+            TableStyle(
+                [
+                    ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#0d6efd")),
+                    ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+                    ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                    ("FONTSIZE", (0, 0), (-1, 0), 7.4),
+                    ("FONTSIZE", (0, 1), (-1, -1), 7.2),
+                    ("GRID", (0, 0), (-1, -1), 0.25, colors.HexColor("#d7e3f4")),
+                    ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#f8fbff")]),
+                    ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                    ("TOPPADDING", (0, 0), (-1, -1), 5),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+                ]
+            )
+        )
+        return tbl
+
+    filtros = datos["filtros"]
+    periodo = f"{filtros.get('fecha_inicio') or 'Inicio'} al {filtros.get('fecha_fin') or 'Actual'}"
+    generado = datetime.now().strftime("%d/%m/%Y %H:%M")
+    total_ventas = sum(v.total or 0 for v in datos["ventas"])
+
+    story = []
+    header = Table(
+        [
+            [
+                Paragraph("NexVolt ERP", styles["BrandTitle"]),
+                Paragraph(f"Reporte comercial<br/>Generado: {generado}<br/>Periodo: {periodo}", styles["BrandSub"]),
+            ]
+        ],
+        colWidths=[3.4 * inch, 3.7 * inch],
+    )
+    header.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#061b34")),
+                ("BOX", (0, 0), (-1, -1), 0.5, colors.HexColor("#0d6efd")),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                ("LEFTPADDING", (0, 0), (-1, -1), 14),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 14),
+                ("TOPPADDING", (0, 0), (-1, -1), 12),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 12),
+            ]
+        )
+    )
+    story.append(header)
+    story.append(Spacer(1, 12))
+
+    resumen = Table(
+        [
+            ["Ventas", "Total vendido", "Adelantos", "Saldos pendientes"],
+            [len(datos["ventas"]), money(total_ventas), money(datos["adelantos"]), money(datos["saldos"])],
+        ],
+        colWidths=[1.4 * inch, 1.9 * inch, 1.9 * inch, 1.9 * inch],
+    )
+    resumen.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#eaf2ff")),
+                ("TEXTCOLOR", (0, 0), (-1, 0), colors.HexColor("#0b2545")),
+                ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                ("FONTNAME", (0, 1), (-1, 1), "Helvetica-Bold"),
+                ("FONTSIZE", (0, 0), (-1, -1), 9),
+                ("TEXTCOLOR", (0, 1), (-1, 1), colors.HexColor("#0d6efd")),
+                ("BOX", (0, 0), (-1, -1), 0.5, colors.HexColor("#bfd7ff")),
+                ("INNERGRID", (0, 0), (-1, -1), 0.25, colors.HexColor("#d7e3f4")),
+                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                ("TOPPADDING", (0, 0), (-1, -1), 8),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
+            ]
+        )
+    )
+    story.append(resumen)
+    story.append(Spacer(1, 8))
+
+    story.append(Paragraph("Ventas por fecha", styles["SectionTitle"]))
+    ventas_rows = [["Fecha", "Cliente", "Estado", "Total"]]
+    for venta in datos["ventas"][:45]:
         cliente = venta.cliente.nombre_completo if venta.cliente and venta.cliente.nombre_completo else (venta.cliente.telefono if venta.cliente else "---")
-        line = f"{venta.fecha.strftime('%d/%m/%Y')} | {cliente[:28]} | {venta.estado} | Bs {venta.total:.2f}"
-        pdf.drawString(40, y, line)
-        y -= 13
-        if y < 50:
-            pdf.showPage()
-            y = height - 45
-            pdf.setFont("Helvetica", 8)
-    pdf.save()
+        ventas_rows.append([venta.fecha.strftime("%d/%m/%Y"), p(cliente[:38]), venta.estado, money(venta.total)])
+    if len(ventas_rows) == 1:
+        ventas_rows.append(["---", "Sin ventas para estos filtros", "---", money(0)])
+    story.append(table(ventas_rows, [0.95 * inch, 3.15 * inch, 1.45 * inch, 1.55 * inch]))
+
+    story.append(Paragraph("Ventas por producto", styles["SectionTitle"]))
+    producto_rows = [["Producto", "Unidades", "Total"]]
+    for nombre, unidades, total in datos["ventas_por_producto"][:18]:
+        producto_rows.append([p(str(nombre)[:50]), unidades, money(total)])
+    if len(producto_rows) == 1:
+        producto_rows.append(["Sin datos", 0, money(0)])
+    story.append(table(producto_rows, [4.4 * inch, 1.2 * inch, 1.5 * inch]))
+
+    story.append(Paragraph("Ventas por categoria", styles["SectionTitle"]))
+    categoria_rows = [["Categoria", "Unidades", "Total"]]
+    for nombre, unidades, total in datos["ventas_por_categoria"][:14]:
+        categoria_rows.append([p(str(nombre)[:45]), unidades, money(total)])
+    if len(categoria_rows) == 1:
+        categoria_rows.append(["Sin datos", 0, money(0)])
+    story.append(table(categoria_rows, [4.4 * inch, 1.2 * inch, 1.5 * inch]))
+
+    story.append(Paragraph("Stock actual", styles["SectionTitle"]))
+    stock_rows = [["Codigo", "Producto", "Stock", "Minimo"]]
+    for producto in datos["stock_actual"][:28]:
+        stock_rows.append([producto.codigo_interno or "---", p(producto.nombre[:45]), producto.stock_actual, producto.stock_minimo])
+    if len(stock_rows) == 1:
+        stock_rows.append(["---", "Sin productos", 0, 0])
+    story.append(table(stock_rows, [1.1 * inch, 3.8 * inch, 1.1 * inch, 1.1 * inch]))
+
+    doc.build(story)
     buffer.seek(0)
     return Response(
         buffer.getvalue(),
