@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard NexVolt{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-start mb-4">
+    <div>
+        <h1 class="h3 fw-bold mb-1">Dashboard NexVolt</h1>
+        <p class="text-muted mb-0">Resumen ejecutivo de inventario, ventas y entregas.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <form method="GET" class="d-flex gap-2">
+            <input type="month" name="mes" value="{{ mes_filtro }}" class="form-control">
+            <button class="btn btn-outline-primary">Filtrar</button>
+        </form>
+        <a href="{{ url_for('bp_pedido.create') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i>Nuevo pedido
+        </a>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="metric-card">
+            <div class="label">Ventas del mes</div>
+            <div class="value">Bs {{ "%.2f"|format(ventas_mes) }}</div>
+            <i class="fas fa-calendar text-primary"></i>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="metric-card">
+            <div class="label">Pedidos del mes</div>
+            <div class="value">{{ pedidos_mes }}</div>
+            <i class="fas fa-cart-shopping text-primary"></i>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="metric-card">
+            <div class="label">Saldos pendientes</div>
+            <div class="value">Bs {{ "%.2f"|format(saldos_mes) }}</div>
+            <i class="fas fa-hourglass-half text-primary"></i>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="metric-card">
+            <div class="label">Stock bajo</div>
+            <div class="value">{{ productos_bajos }}</div>
+            <i class="fas fa-triangle-exclamation text-warning"></i>
+        </div>
+    </div>
+</div>
+
+<details class="page-card mb-4">
+    <summary class="fw-semibold">Ver indicadores secundarios</summary>
+    <div class="row g-3 mt-2">
+        <div class="col-xl-3 col-md-6">
+            <div class="soft-panel h-100">
+                <div class="text-muted small">Total productos</div>
+                <div class="h4 mb-0">{{ total_productos }}</div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="soft-panel h-100">
+                <div class="text-muted small">Total clientes</div>
+                <div class="h4 mb-0">{{ total_clientes }}</div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="soft-panel h-100">
+                <div class="text-muted small">Ventas del dia</div>
+                <div class="h4 mb-0">Bs {{ "%.2f"|format(ventas_dia) }}</div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="soft-panel h-100">
+                <div class="text-muted small">Adelantos del mes</div>
+                <div class="h4 mb-0">Bs {{ "%.2f"|format(adelantos_mes) }}</div>
+            </div>
+        </div>
+    </div>
+</details>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="page-card h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="h5 fw-bold mb-0">Top productos vendidos del mes</h2>
+                <span class="badge text-bg-primary">{{ mes_filtro }}</span>
+            </div>
+            <canvas id="graficoVentas" height="115"></canvas>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="page-card h-100">
+            <h2 class="h5 fw-bold mb-3">Alertas de stock bajo</h2>
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Stock</th>
+                            <th>Minimo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for producto in productos_bajos_lista %}
+                        <tr>
+                            <td>{{ producto.nombre }}</td>
+                            <td><span class="badge badge-soft-danger">{{ producto.stock_actual }}</span></td>
+                            <td>{{ producto.stock_minimo }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="3" class="text-center text-muted py-3">No hay productos con stock bajo.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const ctx = document.getElementById('graficoVentas');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: {{ nombres_productos|tojson }},
+                datasets: [{
+                    label: 'Unidades vendidas',
+                    data: {{ cantidades_vendidas|tojson }},
+                    backgroundColor: '#0d6efd'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+            }
+        });
+    }
+</script>
+{% endblock %}

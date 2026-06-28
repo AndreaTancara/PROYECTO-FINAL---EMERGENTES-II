@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}NexVolt ERP{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #07182f;
+            --navy-2: #0b2447;
+            --electric: #0d6efd;
+            --electric-2: #00a3ff;
+            --page: #f5f8fc;
+            --line: #dce6f2;
+            --text: #1f2a3d;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            background: var(--page);
+            color: var(--text);
+            font-family: "Inter", sans-serif;
+        }
+
+        .erp-shell {
+            min-height: 100vh;
+            display: flex;
+        }
+
+        .erp-sidebar {
+            width: 270px;
+            flex: 0 0 270px;
+            background: linear-gradient(180deg, var(--navy), var(--navy-2));
+            color: #fff;
+            padding: 22px 16px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 10px 0 30px rgba(7, 24, 47, 0.16);
+        }
+
+        .brand-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 10px 22px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+            margin-bottom: 16px;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--electric), var(--electric-2));
+        }
+
+        .brand-title {
+            font-weight: 800;
+            letter-spacing: .3px;
+            line-height: 1;
+        }
+
+        .brand-subtitle {
+            font-size: .78rem;
+            color: rgba(255, 255, 255, .68);
+        }
+
+        .sidebar-label {
+            color: rgba(255, 255, 255, .5);
+            font-size: .72rem;
+            font-weight: 700;
+            letter-spacing: .08em;
+            margin: 18px 10px 8px;
+            text-transform: uppercase;
+        }
+
+        .side-link {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            color: rgba(255, 255, 255, .8);
+            text-decoration: none;
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            font-weight: 600;
+            transition: .15s ease;
+        }
+
+        .side-link:hover,
+        .side-link.active {
+            color: #fff;
+            background: rgba(13, 110, 253, .22);
+        }
+
+        .side-link i {
+            width: 20px;
+            color: #8fc9ff;
+        }
+
+        .erp-main {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            height: 68px;
+            background: #fff;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 28px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .content-wrap {
+            padding: 28px;
+        }
+
+        .page-card {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(7, 24, 47, .05);
+            padding: 22px;
+            animation: riseIn .22s ease both;
+        }
+
+        .metric-card {
+            border: 1px solid var(--line);
+            border-left: 4px solid var(--electric);
+            border-radius: 8px;
+            background: #fff;
+            padding: 18px;
+            min-height: 118px;
+            transition: transform .16s ease, box-shadow .16s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(7, 24, 47, .08);
+        }
+
+        .metric-card .value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--navy);
+        }
+
+        .metric-card .label {
+            color: #62708a;
+            font-weight: 700;
+            font-size: .85rem;
+            text-transform: uppercase;
+        }
+
+        .btn-primary {
+            background: var(--electric);
+            border-color: var(--electric);
+            border-radius: 8px;
+            font-weight: 700;
+        }
+
+        .table {
+            vertical-align: middle;
+        }
+
+        .table tbody tr {
+            transition: background .12s ease;
+        }
+
+        .table thead th {
+            background: #eef4fb;
+            color: #23324a;
+            font-size: .78rem;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .badge-soft-danger {
+            color: #b42318;
+            background: #fee4e2;
+        }
+
+        .table-tools {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+
+        .table-search {
+            max-width: 360px;
+            border-radius: 8px;
+        }
+
+        .soft-panel {
+            background: #f8fbff;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 14px;
+        }
+
+        details.nav-group {
+            margin-bottom: 4px;
+        }
+
+        details.nav-group summary {
+            cursor: pointer;
+            list-style: none;
+        }
+
+        details.nav-group summary::-webkit-details-marker {
+            display: none;
+        }
+
+        @keyframes riseIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 991px) {
+            .erp-shell {
+                display: block;
+            }
+
+            .erp-sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+                border-radius: 0;
+            }
+
+            .content-wrap,
+            .topbar {
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    {% if current_user.is_authenticated %}
+    <div class="erp-shell">
+        {% include "components/navbar.html" %}
+        <section class="erp-main">
+            <header class="topbar">
+                <div>
+                    <strong>NexVolt</strong>
+                    <span class="text-muted ms-2">Inventario, ventas y entregas</span>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <a class="text-decoration-none text-muted" href="{{ url_for('bp_perfil.ver_perfil') }}">
+                        <i class="fas fa-user-circle me-1"></i>{{ current_user.username }}
+                    </a>
+                    <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('auth.logout') }}">
+                        <i class="fas fa-right-from-bracket me-1"></i>Salir
+                    </a>
+                </div>
+            </header>
+            {% include "components/messages.html" %}
+            <main class="content-wrap">
+    {% else %}
+    {% include "components/messages.html" %}
+    <main class="container py-5">
+    {% endif %}
+        {% block content %}{% endblock %}
+    </main>
+    {% if current_user.is_authenticated %}
+        </section>
+    </div>
+    {% endif %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.querySelectorAll('.table-responsive').forEach((wrap, index) => {
+            const table = wrap.querySelector('table');
+            if (!table || wrap.dataset.noSearch === '1' || wrap.previousElementSibling?.classList?.contains('table-tools')) return;
+
+            const tools = document.createElement('div');
+            tools.className = 'table-tools';
+            tools.innerHTML = `
+                <div class="text-muted small"><i class="fas fa-magnifying-glass me-1"></i>Buscar datos</div>
+                <input type="search" class="form-control table-search" placeholder="Buscar en esta tabla...">
+            `;
+            wrap.parentNode.insertBefore(tools, wrap);
+
+            const input = tools.querySelector('input');
+            input.addEventListener('input', () => {
+                const query = input.value.toLowerCase().trim();
+                table.querySelectorAll('tbody tr').forEach(row => {
+                    const text = row.innerText.toLowerCase();
+                    row.style.display = text.includes(query) ? '' : 'none';
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

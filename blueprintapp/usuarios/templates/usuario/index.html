@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1 class="fw-bold">
+            <i class="fas fa-chart-line text-primary"></i> Dashboard
+        </h1>
+        <p class="text-muted">Bienvenido <strong>{{ current_user.username }}</strong></p>
+        <a href="{{ url_for('bp_usuario.create')}}" class="btn btn-sm btn-primary">
+            <i class="fas fa-edit"></i> Agregar nuevo usuario
+        </a>
+    </div>
+
+    {# Botón de acceso exclusivo para administradores #}
+    {% if current_user.rol and current_user.rol.nombre_rol == 'Administrador' %}
+    <div class="col-md-4 text-end">
+        <a href="{{ url_for('bp_role.index') }}" class="btn btn-primary shadow-sm">
+            <i class="fas fa-user-shield"></i> Gestionar Roles
+        </a>
+    </div>
+    {% endif %}
+
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0"><i class="fas fa-users me-2"></i> Usuarios Registrados</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Usuario</th>
+                                {% if current_user.rol and current_user.rol.nombre_rol == 'Administrador' %}
+                                <th>Acciones</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for usuario in usuarios %}
+
+                            <tr>
+                                <td><span class="badge bg-secondary">{{ usuario.id }}</span></td>
+                                <td><i class="fas fa-user-circle text-primary me-2"></i> {{ usuario.username }}</td>
+
+                                {% if current_user.rol and current_user.rol.nombre_rol == 'Administrador' %}
+                                <td>
+
+                                    {# Botón Editar #}
+                                    <a href="{{ url_for('bp_usuario.edit', id=usuario.id) }}"
+                                        class="btn btn-sm btn-warning">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </a>
+
+                                    {# Botón Eliminar con formulario para mayor seguridad (POST method) #}
+                                    <form action="{{ url_for('bp_usuario.delete', id=usuario.id) }}" method="POST"
+                                        style="display:inline;"
+                                        onsubmit="return confirm('¿Estás seguro de eliminar este usuario?');">
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash-alt"></i> Eliminar
+                                        </button>
+                                    </form>
+                                </td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

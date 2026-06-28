@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 fw-bold mb-1">Entregas</h1>
+        <p class="text-muted mb-0">Cronograma de entregas locales y puntos acordados.</p>
+    </div>
+    <a href="{{ url_for('bp_entrega.create') }}" class="btn btn-primary">
+        <i class="fas fa-plus me-1"></i>Nueva entrega
+    </a>
+</div>
+
+<div class="page-card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Lugar</th>
+                    <th>Pedido</th>
+                    <th>Responsable</th>
+                    <th>Estado</th>
+                    <th class="text-end">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in entregas %}
+                <tr>
+                    <td>{{ item.fecha_entrega.strftime('%d/%m/%Y') }}</td>
+                    <td>{{ item.hora.strftime('%H:%M') }}</td>
+                    <td>{{ item.lugar }}</td>
+                    <td>#{{ item.pedido_id }}</td>
+                    <td>{{ item.responsable or '---' }}</td>
+                    <td><span class="badge text-bg-primary">{{ item.estado }}</span></td>
+                    <td class="text-end">
+                        <a href="{{ url_for('bp_entrega.edit', id=item.id) }}" class="btn btn-sm btn-outline-primary">Editar</a>
+                        <form action="{{ url_for('bp_entrega.delete', id=item.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Seguro que deseas eliminar esta entrega?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="7" class="text-center text-muted py-4">No hay entregas programadas.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

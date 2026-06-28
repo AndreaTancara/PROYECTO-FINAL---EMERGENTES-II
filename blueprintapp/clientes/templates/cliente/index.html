@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 fw-bold mb-1">Clientes</h1>
+        <p class="text-muted mb-0">Datos de contacto, direccion y referencias para entregas.</p>
+    </div>
+    <a href="{{ url_for('bp_cliente.create') }}" class="btn btn-primary">
+        <i class="fas fa-plus me-1"></i>Nuevo cliente
+    </a>
+</div>
+
+<div class="page-card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Cliente</th>
+                    <th>Telefono</th>
+                    <th>Ciudad</th>
+                    <th>Direccion</th>
+                    <th>Referencia</th>
+                    <th>Observaciones</th>
+                    <th class="text-end">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in clientes %}
+                <tr>
+                    <td><strong>{{ item.nombre_completo or 'Sin nombre' }}</strong><div class="small text-muted">{{ item.email or '' }}</div></td>
+                    <td>{{ item.telefono }}</td>
+                    <td>{{ item.ciudad or '---' }}</td>
+                    <td>{{ item.direccion or '---' }}</td>
+                    <td>{{ item.referencia or '---' }}</td>
+                    <td>{{ item.observaciones or '---' }}</td>
+                    <td class="text-end">
+                        <a href="{{ url_for('bp_cliente.edit', id=item.id) }}" class="btn btn-sm btn-outline-primary">Editar</a>
+                        <form action="{{ url_for('bp_cliente.delete', id=item.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Seguro que deseas eliminar este cliente?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="7" class="text-center text-muted py-4">No hay clientes registrados.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

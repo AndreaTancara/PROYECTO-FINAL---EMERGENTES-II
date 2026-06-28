@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 fw-bold mb-1">Compras de stock</h1>
+        <p class="text-muted mb-0">Ingresos por factura y control de inversion.</p>
+    </div>
+    <a href="{{ url_for('bp_compra.create') }}" class="btn btn-primary"><i class="fas fa-plus me-1"></i>Nueva compra</a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-6"><div class="metric-card"><div class="label">Inversion total</div><div class="value">Bs {{ "%.2f"|format(inversion) }}</div></div></div>
+    <div class="col-md-6"><div class="metric-card"><div class="label">Gastos de compra</div><div class="value">Bs {{ "%.2f"|format(gastos) }}</div></div></div>
+</div>
+
+<div class="page-card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead><tr><th>Fecha</th><th>Factura</th><th>Producto</th><th>Cantidad</th><th>Costo</th><th>Gasto</th><th>Total</th><th class="text-end">Acciones</th></tr></thead>
+            <tbody>
+                {% for compra in compras %}
+                <tr>
+                    <td>{{ compra.fecha.strftime('%d/%m/%Y') }}</td>
+                    <td>{{ compra.factura }}</td>
+                    <td>{{ compra.producto.nombre if compra.producto else '---' }}</td>
+                    <td>{{ compra.cantidad }}</td>
+                    <td>Bs {{ "%.2f"|format(compra.costo_unitario) }}</td>
+                    <td>Bs {{ "%.2f"|format(compra.gasto_compra) }}</td>
+                    <td>Bs {{ "%.2f"|format(compra.total_compra) }}</td>
+                    <td class="text-end">
+                        <a href="{{ url_for('bp_compra.edit', id=compra.id) }}" class="btn btn-sm btn-outline-primary">Editar</a>
+                        <form action="{{ url_for('bp_compra.delete', id=compra.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Eliminar esta compra ajustara el stock. Continuar?');">
+                            <button class="btn btn-sm btn-outline-danger">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="8" class="text-center text-muted py-4">No hay compras registradas.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

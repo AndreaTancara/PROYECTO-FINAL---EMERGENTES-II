@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-warning text-dark">
+                <h3 class="card-title mb-0 h5">Modificar Datos del cliente</h3>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('bp_cliente.edit', id=cliente.id) }}" method="POST">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="nombre" class="form-label">Nombre completo</label>
+                            <input type="text" id="nombre" name="nombre" class="form-control" value="{{ cliente.nombre_completo or '' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="telefono" class="form-label">Teléfono</label>
+                            <input type="text" id="telefono" name="telefono" class="form-control" value="{{ cliente.telefono }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="ciudad" class="form-label">Ciudad</label>
+                            <input type="text" id="ciudad" name="ciudad" class="form-control" value="{{ cliente.ciudad }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="direccion" class="form-label">Dirección</label>
+                            <input type="text" id="direccion" name="direccion" class="form-control" value="{{ cliente.direccion }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="referencia" class="form-label">Referencia</label>
+                            <input type="text" id="referencia" name="referencia" class="form-control" value="{{ cliente.referencia }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="tipo_cliente" class="form-label">Tipo de cliente</label>
+                            <input type="text" id="tipo_cliente" name="tipo_cliente" class="form-control" value="{{ cliente.tipo_cliente }}">
+                        </div>
+                        <div class="col-12">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" id="email" name="email" class="form-control" value="{{ cliente.email }}">
+                        </div>
+                        <div class="col-12">
+                            <label for="observaciones" class="form-label">Observaciones</label>
+                            <textarea id="observaciones" name="observaciones" class="form-control" rows="3">{{ cliente.observaciones }}</textarea>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between pt-2">
+                        <a href="{{ url_for('bp_cliente.index') }}" class="btn btn-secondary">Volver al listado</a>
+                        <button type="submit" class="btn btn-warning">Actualizar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

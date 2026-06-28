@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h3 class="card-title mb-0 h5">Pedido #{{ pedido.id }}</h3>
+                <a href="{{ url_for('bp_pedido.index') }}" class="btn btn-light btn-sm">Volver</a>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>Cliente:</strong>
+                        <p>{{ pedido.cliente.nombre_completo if pedido.cliente else '---' }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Fecha:</strong>
+                        <p>{{ pedido.fecha.strftime('%d/%m/%Y %H:%M') }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Estado:</strong>
+                        <p>{{ pedido.estado }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Saldo pendiente:</strong>
+                        <p>{{ '%.2f'|format(pedido.saldo_pendiente) }}</p>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h5>Detalles del pedido</h5>
+                    <div class="table-responsive">
+                        <table class="table table-bordered mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Cantidad</th>
+                                    <th>Precio unitario</th>
+                                    <th>Descuento</th>
+                                    <th>Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for detalle in pedido.detalles %}
+                                <tr>
+                                    <td>{{ detalle.producto.nombre if detalle.producto else '---' }}</td>
+                                    <td>{{ detalle.cantidad }}</td>
+                                    <td>{{ '%.2f'|format(detalle.precio_unitario) }}</td>
+                                    <td>{{ '%.2f'|format(detalle.descuento_item) }}</td>
+                                    <td>{{ '%.2f'|format(detalle.subtotal) }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <strong>Total:</strong>
+                        <p>{{ '%.2f'|format(pedido.total) }}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Adelanto:</strong>
+                        <p>{{ '%.2f'|format(pedido.adelanto) }}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Descuento total:</strong>
+                        <p>{{ '%.2f'|format(pedido.descuento) }}</p>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <strong>Observaciones:</strong>
+                    <p>{{ pedido.observaciones or 'Sin observaciones' }}</p>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="card border-secondary">
+                            <div class="card-header bg-secondary text-white">Pagos</div>
+                            <div class="card-body p-3">
+                                {% if pedido.pagos %}
+                                <ul class="list-group list-group-flush">
+                                    {% for pago in pedido.pagos %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>{{ pago.fecha.strftime('%d/%m/%Y') }} - {{ pago.metodo }}</span>
+                                        <span class="badge bg-success">{{ '%.2f'|format(pago.monto) }}</span>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                                {% else %}
+                                <p class="mb-0">Aún no se han registrado pagos.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-info">
+                            <div class="card-header bg-info text-white">Entregas</div>
+                            <div class="card-body p-3">
+                                {% if pedido.entregas %}
+                                <ul class="list-group list-group-flush">
+                                    {% for entrega in pedido.entregas %}
+                                    <li class="list-group-item">
+                                        {{ entrega.fecha_entrega.strftime('%d/%m/%Y') }} {{ entrega.hora.strftime('%H:%M') }} - {{ entrega.lugar }}
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                                {% else %}
+                                <p class="mb-0">No hay entregas programadas.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4 mt-3">
+                    <div class="col-md-6">
+                        <div class="card border-warning">
+                            <div class="card-header bg-warning text-dark">Envíos</div>
+                            <div class="card-body p-3">
+                                {% if pedido.envios %}
+                                <ul class="list-group list-group-flush">
+                                    {% for envio in pedido.envios %}
+                                    <li class="list-group-item">
+                                        {{ envio.empresa_transporte }} - {{ envio.numero_guia }}<br>
+                                        {{ envio.ciudad_destino }} / {{ envio.estado_envio }}
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                                {% else %}
+                                <p class="mb-0">No hay envíos registrados.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 d-flex align-items-end">
+                        <div class="w-100">
+                            <a href="{{ url_for('bp_pedido.edit', id=pedido.id) }}" class="btn btn-secondary w-100 mb-2">Editar pedido</a>
+                            <a href="{{ url_for('bp_pago.create') }}" class="btn btn-success w-100 mb-2">Registrar pago</a>
+                            <a href="{{ url_for('bp_entrega.create') }}" class="btn btn-info text-white w-100 mb-2">Programar entrega</a>
+                            <a href="{{ url_for('bp_envio.create') }}" class="btn btn-warning text-white w-100">Crear envío</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="page-card mx-auto" style="max-width: 820px;">
+    <h1 class="h4 fw-bold mb-3">Registrar envio nacional</h1>
+    <p class="text-muted">Elige un pedido y completa solo lo necesario. Los datos del cliente se rellenan desde el pedido si los dejas vacios.</p>
+    <form action="{{ url_for('bp_envio.create') }}" method="POST">
+        <div class="row g-3">
+            <div class="col-12">
+                <label class="form-label">Pedido</label>
+                <select name="pedido_id" class="form-select" required>
+                    <option value="">Selecciona un pedido</option>
+                    {% for pedido in pedidos %}
+                    <option value="{{ pedido.id }}">Pedido #{{ pedido.id }} - Bs {{ '%.2f'|format(pedido.total) }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Cliente</label>
+                <input type="text" name="cliente_nombre" class="form-control" placeholder="Opcional">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Telefono</label>
+                <input type="text" name="telefono" class="form-control">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Ciudad destino</label>
+                <input type="text" name="ciudad_destino" class="form-control" list="ciudades">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Transporte</label>
+                <input type="text" name="empresa_transporte" class="form-control" list="transportes">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Numero de guia</label>
+                <input type="text" name="numero_guia" class="form-control">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Estado</label>
+                <select name="estado_envio" class="form-select">
+                    {% for estado in estados %}
+                    <option value="{{ estado }}">{{ estado }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <datalist id="transportes">
+            <option value="Trans Copacabana">
+            <option value="Bolivar">
+            <option value="Flota">
+            <option value="Courier">
+        </datalist>
+        <datalist id="ciudades">
+            <option value="La Paz">
+            <option value="El Alto">
+            <option value="Cochabamba">
+            <option value="Santa Cruz">
+            <option value="Oruro">
+        </datalist>
+        <div class="d-flex justify-content-between mt-4">
+            <a href="{{ url_for('bp_envio.index') }}" class="btn btn-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-primary">Guardar envio</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

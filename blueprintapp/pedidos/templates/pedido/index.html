@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Listado de Pedidos</h1>
+    <a href="{{ url_for('bp_pedido.create') }}" class="btn btn-primary">+ Nuevo Pedido</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped mb-0 align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col" class="ps-4">ID</th>
+                        <th scope="col">Fecha</th>
+                        <th scope="col">Cliente</th>
+                        <th scope="col">Total</th>
+                        <th scope="col">Saldo</th>
+                        <th scope="col">Estado</th>
+                        <th scope="col" class="text-end pe-4">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in pedidos %}
+                    <tr>
+                        <td class="ps-4 fw-bold">{{ item.id }}</td>
+                        <td>{{ item.fecha.strftime('%d/%m/%Y %H:%M') }}</td>
+                        <td>{{ item.cliente.nombre_completo if item.cliente else '---' }}</td>
+                        <td>{{ "%.2f"|format(item.total) }}</td>
+                        <td>{{ "%.2f"|format(item.saldo_pendiente) }}</td>
+                        <td>
+                            <span class="badge bg-{{ 'success' if item.estado == 'Entregado' else 'info' if item.estado == 'Pagado' else 'warning' if item.estado in ['Confirmado', 'Preparando', 'En Ruta'] else 'secondary' }}">
+                                {{ item.estado }}
+                            </span>
+                        </td>
+                        <td class="text-end pe-4">
+                            <a href="{{ url_for('bp_pedido.view', id=item.id) }}" class="btn btn-sm btn-outline-primary me-1">Ver</a>
+                            <a href="{{ url_for('bp_pedido.edit', id=item.id) }}" class="btn btn-sm btn-outline-secondary me-1">Editar</a>
+                            <form action="{{ url_for('bp_pedido.delete', id=item.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('¿Seguro que deseas eliminar este pedido?');">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center py-4">No hay pedidos registrados.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

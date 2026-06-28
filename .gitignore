@@ -1,0 +1,9 @@
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.env
+.DS_Store
+*.log
+blueprintapp/**/__pycache__/
+migrations/**/__pycache__/

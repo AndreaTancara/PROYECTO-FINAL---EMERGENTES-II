@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Mi Perfil</h2>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card p-3">
+                <h5>Cambiar Contraseña</h5>
+                <form action="{{ url_for('bp_perfil.cambiar_password') }}" method="POST">
+                    <input type="password" name="current_pw" class="form-control mb-2" placeholder="Contraseña actual"
+                        required>
+                    <input type="password" name="new_pw" class="form-control mb-2" placeholder="Nueva contraseña"
+                        required>
+                    <button type="submit" class="btn btn-primary w-100">Actualizar</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <h5>Mis Ventas Recientes</h5>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pedido in pedidos %}
+                    <tr>
+                        <td>{{ pedido.id }}</td>
+                        <td>{{ pedido.fecha.strftime('%d-%m-%Y') }}</td>
+                        <td>Bs. {{ pedido.total }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

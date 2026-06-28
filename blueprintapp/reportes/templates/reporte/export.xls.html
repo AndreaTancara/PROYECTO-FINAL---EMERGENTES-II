@@ -1,0 +1,41 @@
+<table border="1">
+    <tr><th colspan="4">Ventas por fecha</th></tr>
+    <tr><th>Fecha</th><th>Cliente</th><th>Estado</th><th>Total</th></tr>
+    {% for venta in ventas %}
+    <tr>
+        <td>{{ venta.fecha.strftime('%d/%m/%Y') }}</td>
+        <td>{{ venta.cliente.nombre_completo if venta.cliente else '' }}</td>
+        <td>{{ venta.estado }}</td>
+        <td>{{ venta.total }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<br>
+<table border="1">
+    <tr><th colspan="3">Ventas por producto</th></tr>
+    <tr><th>Producto</th><th>Unidades</th><th>Total</th></tr>
+    {% for nombre, unidades, total in ventas_por_producto %}
+    <tr><td>{{ nombre }}</td><td>{{ unidades }}</td><td>{{ total }}</td></tr>
+    {% endfor %}
+</table>
+<br>
+<table border="1">
+    <tr><th colspan="3">Ventas por categoria</th></tr>
+    <tr><th>Categoria</th><th>Unidades</th><th>Total</th></tr>
+    {% for nombre, unidades, total in ventas_por_categoria %}
+    <tr><td>{{ nombre }}</td><td>{{ unidades }}</td><td>{{ total }}</td></tr>
+    {% endfor %}
+</table>
+<br>
+<table border="1">
+    <tr><th colspan="4">Inventario</th></tr>
+    <tr><th>Codigo</th><th>Producto</th><th>Stock</th><th>Stock minimo</th></tr>
+    {% for producto in stock_actual %}
+    <tr><td>{{ producto.codigo_interno }}</td><td>{{ producto.nombre }}</td><td>{{ producto.stock_actual }}</td><td>{{ producto.stock_minimo }}</td></tr>
+    {% endfor %}
+</table>
+<br>
+<table border="1">
+    <tr><th>Adelantos</th><th>Saldos pendientes</th></tr>
+    <tr><td>{{ adelantos }}</td><td>{{ saldos }}</td></tr>
+</table>

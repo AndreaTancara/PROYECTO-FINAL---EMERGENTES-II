@@ -1,0 +1,40 @@
+<aside class="erp-sidebar">
+    <div class="brand-box">
+        <div class="brand-icon"><i class="fas fa-bolt"></i></div>
+        <div>
+            <div class="brand-title">NexVolt</div>
+            <div class="brand-subtitle">ERP Comercial</div>
+        </div>
+    </div>
+
+    <a class="side-link" href="{{ url_for('main_bp.index') }}"><i class="fas fa-chart-pie"></i>Dashboard</a>
+
+    <div class="sidebar-label">Trabajo diario</div>
+    <a class="side-link" href="{{ url_for('bp_pedido.index') }}"><i class="fas fa-cart-shopping"></i>Pedidos</a>
+    <a class="side-link" href="{{ url_for('bp_producto.index') }}"><i class="fas fa-boxes-stacked"></i>Productos</a>
+    <a class="side-link" href="{{ url_for('bp_cliente.index') }}"><i class="fas fa-users"></i>Clientes</a>
+    <a class="side-link" href="{{ url_for('bp_entrega.index') }}"><i class="fas fa-truck-ramp-box"></i>Entregas</a>
+
+    <details class="nav-group">
+        <summary class="side-link"><i class="fas fa-layer-group"></i>Mas opciones</summary>
+        <a class="side-link ms-2" href="{{ url_for('bp_pago.index') }}"><i class="fas fa-money-bill-wave"></i>Pagos</a>
+        <a class="side-link ms-2" href="{{ url_for('bp_compra.index') }}"><i class="fas fa-file-invoice-dollar"></i>Compras stock</a>
+        <a class="side-link ms-2" href="{{ url_for('bp_envio.index') }}"><i class="fas fa-shipping-fast"></i>Envios</a>
+        <a class="side-link ms-2" href="{{ url_for('bp_gasto.index') }}"><i class="fas fa-receipt"></i>Gastos</a>
+        <a class="side-link ms-2" href="{{ url_for('bp_reporte.index') }}"><i class="fas fa-file-lines"></i>Reportes</a>
+    </details>
+
+    <details class="nav-group">
+        <summary class="side-link"><i class="fas fa-tags"></i>Catalogo</summary>
+        <a class="side-link ms-2" href="{{ url_for('bp_categoria.index') }}"><i class="fas fa-tags"></i>Categorias</a>
+        <a class="side-link ms-2" href="{{ url_for('bp_proveedor.index') }}"><i class="fas fa-handshake"></i>Proveedores</a>
+    </details>
+
+    {% if current_user.rol and current_user.rol.nombre_rol == 'Administrador' %}
+    <details class="nav-group">
+        <summary class="side-link"><i class="fas fa-user-gear"></i>Administracion</summary>
+        <a class="side-link ms-2" href="{{ url_for('bp_usuario.index') }}"><i class="fas fa-user-gear"></i>Usuarios</a>
+        <a class="side-link ms-2" href="{{ url_for('bp_role.index') }}"><i class="fas fa-shield-halved"></i>Roles</a>
+    </details>
+    {% endif %}
+</aside>

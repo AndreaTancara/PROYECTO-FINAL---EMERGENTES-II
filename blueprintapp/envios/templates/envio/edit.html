@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="page-card mx-auto" style="max-width: 780px;">
+    <h1 class="h4 fw-bold mb-3">Editar envio #{{ envio.id }}</h1>
+    <form method="POST">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Cliente</label>
+                <input type="text" name="cliente_nombre" value="{{ envio.cliente_nombre or '' }}" class="form-control">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Telefono</label>
+                <input type="text" name="telefono" value="{{ envio.telefono or '' }}" class="form-control">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Ciudad destino</label>
+                <input type="text" name="ciudad_destino" value="{{ envio.ciudad_destino or '' }}" class="form-control">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Transporte</label>
+                <input type="text" name="empresa_transporte" value="{{ envio.empresa_transporte or '' }}" class="form-control" list="transportes">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Numero de guia</label>
+                <input type="text" name="numero_guia" value="{{ envio.numero_guia or '' }}" class="form-control">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Estado</label>
+                <select name="estado_envio" class="form-select">
+                    {% for estado in estados %}
+                    <option value="{{ estado }}" {% if envio.estado_envio == estado %}selected{% endif %}>{{ estado }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <datalist id="transportes">
+            <option value="Trans Copacabana">
+            <option value="Bolivar">
+            <option value="Flota">
+            <option value="Courier">
+        </datalist>
+        <div class="d-flex justify-content-between mt-4">
+            <a href="{{ url_for('bp_envio.index') }}" class="btn btn-secondary">Cancelar</a>
+            <button class="btn btn-primary">Guardar cambios</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

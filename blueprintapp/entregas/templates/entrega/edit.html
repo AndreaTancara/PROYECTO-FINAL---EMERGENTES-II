@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="page-card mx-auto" style="max-width: 860px;">
+    <h1 class="h4 fw-bold mb-3">Editar entrega #{{ entrega.id }}</h1>
+    <form method="POST">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Fecha</label>
+                <input type="date" name="fecha_entrega" value="{{ entrega.fecha_entrega.strftime('%Y-%m-%d') }}" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Hora</label>
+                <input type="time" name="hora" value="{{ entrega.hora.strftime('%H:%M') }}" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Lugar rapido</label>
+                <select name="lugar" class="form-select">
+                    {% for lugar in lugares %}
+                    <option value="{{ lugar }}" {% if entrega.lugar == lugar %}selected{% endif %}>{{ lugar }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Lugar personalizado</label>
+                <input type="text" name="lugar_personalizado" class="form-control" placeholder="{{ entrega.lugar }}">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Estado</label>
+                <select name="estado" class="form-select">
+                    {% for estado in estados %}
+                    <option value="{{ estado }}" {% if entrega.estado == estado %}selected{% endif %}>{{ estado }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Responsable</label>
+                <input type="text" name="responsable" value="{{ entrega.responsable or '' }}" class="form-control">
+            </div>
+            <div class="col-12">
+                <label class="form-label">Observaciones</label>
+                <textarea name="observaciones" rows="3" class="form-control">{{ entrega.observaciones or '' }}</textarea>
+            </div>
+        </div>
+        <div class="d-flex justify-content-between mt-4">
+            <a href="{{ url_for('bp_entrega.index') }}" class="btn btn-secondary">Cancelar</a>
+            <button class="btn btn-primary">Guardar cambios</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

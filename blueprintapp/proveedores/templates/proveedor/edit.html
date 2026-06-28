@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-warning text-dark">
+                <h3 class="card-title mb-0 h5">Modificar Datos del Proveedor</h3>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('bp_proveedor.edit', id=proveedor.id) }}" method="POST">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="nombre_empresa" class="form-label">Empresa</label>
+                            <input type="text" id="nombre_empresa" name="nombre_empresa" class="form-control"
+                                value="{{ proveedor.nombre_empresa }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="contacto" class="form-label">Contacto</label>
+                            <input type="text" id="contacto" name="contacto" class="form-control"
+                                value="{{ proveedor.contacto }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="telefono" class="form-label">Teléfono</label>
+                            <input type="text" id="telefono" name="telefono" class="form-control"
+                                value="{{ proveedor.telefono }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="whatsapp" class="form-label">WhatsApp</label>
+                            <input type="text" id="whatsapp" name="whatsapp" class="form-control"
+                                value="{{ proveedor.whatsapp }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="correo" class="form-label">Correo</label>
+                            <input type="email" id="correo" name="correo" class="form-control"
+                                value="{{ proveedor.correo }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="direccion" class="form-label">Dirección</label>
+                            <input type="text" id="direccion" name="direccion" class="form-control"
+                                value="{{ proveedor.direccion }}">
+                        </div>
+                        <div class="col-12">
+                            <label for="observaciones" class="form-label">Observaciones</label>
+                            <textarea id="observaciones" name="observaciones" class="form-control" rows="3">{{ proveedor.observaciones }}</textarea>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between pt-2">
+                        <a href="{{ url_for('bp_proveedor.index') }}" class="btn btn-secondary">Volver al listado</a>
+                        <button type="submit" class="btn btn-warning">Actualizar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

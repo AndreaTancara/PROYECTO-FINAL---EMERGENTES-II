@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 fw-bold mb-1">Envios nacionales</h1>
+        <p class="text-muted mb-0">Transporte, guia y seguimiento por ciudad.</p>
+    </div>
+    <a href="{{ url_for('bp_envio.create') }}" class="btn btn-primary"><i class="fas fa-plus me-1"></i>Nuevo envio</a>
+</div>
+
+<div class="page-card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead><tr><th>Pedido</th><th>Cliente</th><th>Telefono</th><th>Ciudad</th><th>Transporte</th><th>Guia</th><th>Estado</th><th class="text-end">Acciones</th></tr></thead>
+            <tbody>
+                {% for envio in envios %}
+                <tr>
+                    <td>#{{ envio.pedido_id }}</td>
+                    <td>{{ envio.cliente_nombre or (envio.pedido.cliente.nombre_completo if envio.pedido and envio.pedido.cliente else '---') }}</td>
+                    <td>{{ envio.telefono or (envio.pedido.cliente.telefono if envio.pedido and envio.pedido.cliente else '---') }}</td>
+                    <td>{{ envio.ciudad_destino or '---' }}</td>
+                    <td>{{ envio.empresa_transporte or '---' }}</td>
+                    <td>{{ envio.numero_guia or '---' }}</td>
+                    <td><span class="badge text-bg-primary">{{ envio.estado_envio }}</span></td>
+                    <td class="text-end">
+                        <a href="{{ url_for('bp_envio.edit', id=envio.id) }}" class="btn btn-sm btn-outline-primary">Editar</a>
+                        <form action="{{ url_for('bp_envio.delete', id=envio.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Seguro que deseas eliminar este envio?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="8" class="text-center text-muted py-4">No hay envios registrados.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

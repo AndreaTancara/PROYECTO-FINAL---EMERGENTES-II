@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 fw-bold mb-1">Gastos</h1>
+        <p class="text-muted mb-0">Gastos de repartidores y operacion diaria.</p>
+    </div>
+    <a href="{{ url_for('bp_gasto.create') }}" class="btn btn-primary"><i class="fas fa-plus me-1"></i>Nuevo gasto</a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4"><div class="metric-card"><div class="label">Hoy</div><div class="value">Bs {{ "%.2f"|format(total_dia) }}</div></div></div>
+    <div class="col-md-4"><div class="metric-card"><div class="label">Semana</div><div class="value">Bs {{ "%.2f"|format(total_semana) }}</div></div></div>
+    <div class="col-md-4"><div class="metric-card"><div class="label">Mes</div><div class="value">Bs {{ "%.2f"|format(total_mes) }}</div></div></div>
+</div>
+
+<div class="page-card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead><tr><th>Fecha</th><th>Usuario</th><th>Tipo</th><th>Descripcion</th><th class="text-end">Monto</th><th class="text-end">Acciones</th></tr></thead>
+            <tbody>
+                {% for gasto in gastos %}
+                <tr>
+                    <td>{{ gasto.fecha.strftime('%d/%m/%Y') }}</td>
+                    <td>{{ gasto.usuario.username if gasto.usuario else '---' }}</td>
+                    <td>{{ gasto.tipo }}</td>
+                    <td>{{ gasto.descripcion }}</td>
+                    <td class="text-end">Bs {{ "%.2f"|format(gasto.monto) }}</td>
+                    <td class="text-end">
+                        <a href="{{ url_for('bp_gasto.edit', id=gasto.id) }}" class="btn btn-sm btn-outline-primary">Editar</a>
+                        <form action="{{ url_for('bp_gasto.delete', id=gasto.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Eliminar este gasto?');">
+                            <button class="btn btn-sm btn-outline-danger">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="6" class="text-center text-muted py-4">No hay gastos registrados.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

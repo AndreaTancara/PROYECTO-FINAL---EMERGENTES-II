@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 fw-bold mb-1">Productos</h1>
+        <p class="text-muted mb-0">Catalogo comercial con precios, stock y alertas.</p>
+    </div>
+    <a href="{{ url_for('bp_producto.create') }}" class="btn btn-primary">
+        <i class="fas fa-plus me-1"></i>Nuevo producto
+    </a>
+</div>
+
+<div class="page-card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Imagen</th>
+                    <th>Codigo</th>
+                    <th>Producto</th>
+                    <th>Marca</th>
+                    <th>Precio normal</th>
+                    <th>Precio live</th>
+                    <th>Stock</th>
+                    <th>Categoria</th>
+                    <th>Proveedor</th>
+                    <th class="text-end">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in productos %}
+                <tr class="{% if item.stock_actual <= item.stock_minimo %}table-warning{% endif %}">
+                    <td>
+                        {% if item.imagen %}
+                        <img src="{{ item.imagen }}" alt="{{ item.nombre }}" style="width:46px;height:46px;object-fit:cover;border-radius:8px;">
+                        {% else %}
+                        <div class="bg-light border rounded d-flex align-items-center justify-content-center" style="width:46px;height:46px;">
+                            <i class="fas fa-box text-muted"></i>
+                        </div>
+                        {% endif %}
+                    </td>
+                    <td><span class="badge text-bg-light">{{ item.codigo_interno }}</span></td>
+                    <td>
+                        <strong>{{ item.nombre }}</strong>
+                        {% if item.descripcion %}<div class="small text-muted">{{ item.descripcion[:70] }}</div>{% endif %}
+                    </td>
+                    <td>{{ item.marca or '---' }}</td>
+                    <td>Bs {{ "%.2f"|format(item.precio_normal) }}</td>
+                    <td>Bs {{ "%.2f"|format(item.precio_live) }}</td>
+                    <td>
+                        {% if item.stock_actual <= item.stock_minimo %}
+                        <span class="badge badge-soft-danger">{{ item.stock_actual }} / min {{ item.stock_minimo }}</span>
+                        {% else %}
+                        <span class="badge text-bg-success">{{ item.stock_actual }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ item.categoria.nombre if item.categoria else '---' }}</td>
+                    <td>{{ item.proveedor.nombre_empresa if item.proveedor else '---' }}</td>
+                    <td class="text-end">
+                        <a href="{{ url_for('bp_producto.edit', id=item.id) }}" class="btn btn-sm btn-outline-primary">Editar</a>
+                        <form action="{{ url_for('bp_producto.delete', id=item.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Seguro que deseas eliminar este producto?');">
+                            <button class="btn btn-sm btn-outline-danger">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="10" class="text-center text-muted py-4">No hay productos registrados.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

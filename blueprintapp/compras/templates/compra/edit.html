@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-card mx-auto" style="max-width: 860px;">
+    <h1 class="h4 fw-bold mb-3">Editar compra #{{ compra.id }}</h1>
+    <form method="POST">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Producto</label>
+                <select name="producto_id" class="form-select" required>
+                    {% for producto in productos %}
+                    <option value="{{ producto.id }}" {% if compra.producto_id == producto.id %}selected{% endif %}>{{ producto.codigo_interno }} - {{ producto.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Fecha</label>
+                <input type="date" name="fecha" value="{{ compra.fecha.strftime('%Y-%m-%d') }}" class="form-control" required>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Factura</label>
+                <input type="text" name="factura" value="{{ compra.factura }}" class="form-control" required>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Cantidad</label>
+                <input type="number" name="cantidad" min="1" value="{{ compra.cantidad }}" class="form-control" required>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Costo unitario</label>
+                <input type="number" step="0.01" name="costo_unitario" value="{{ compra.costo_unitario }}" class="form-control" required>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Gasto de compra</label>
+                <input type="number" step="0.01" name="gasto_compra" value="{{ compra.gasto_compra }}" class="form-control">
+            </div>
+            <div class="col-12">
+                <label class="form-label">Observaciones</label>
+                <textarea name="observaciones" rows="3" class="form-control">{{ compra.observaciones or '' }}</textarea>
+            </div>
+        </div>
+        <div class="d-flex justify-content-between mt-4">
+            <a href="{{ url_for('bp_compra.index') }}" class="btn btn-secondary">Cancelar</a>
+            <button class="btn btn-primary">Guardar cambios</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

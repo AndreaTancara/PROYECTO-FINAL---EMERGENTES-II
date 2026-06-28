@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-card mx-auto" style="max-width: 720px;">
+    <h1 class="h4 fw-bold mb-3">Editar gasto #{{ gasto.id }}</h1>
+    <form method="POST">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Fecha</label>
+                <input type="date" name="fecha" value="{{ gasto.fecha.strftime('%Y-%m-%d') }}" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Tipo</label>
+                <input type="text" name="tipo" value="{{ gasto.tipo }}" class="form-control" list="tipos-gasto">
+            </div>
+            <div class="col-12">
+                <label class="form-label">Descripcion</label>
+                <input type="text" name="descripcion" value="{{ gasto.descripcion }}" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Monto</label>
+                <input type="number" step="0.01" name="monto" value="{{ gasto.monto }}" class="form-control" required>
+            </div>
+        </div>
+        <datalist id="tipos-gasto">
+            <option value="Repartidor">
+            <option value="Taxi">
+            <option value="Empaque">
+            <option value="Publicidad">
+        </datalist>
+        <div class="d-flex justify-content-between mt-4">
+            <a href="{{ url_for('bp_gasto.index') }}" class="btn btn-secondary">Cancelar</a>
+            <button class="btn btn-primary">Guardar cambios</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
